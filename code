@@ -1,0 +1,447 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <iomanip>
+#include <cstdlib>//using for clrscr
+using namespace std;
+
+class MenuItem {
+public:
+    string name;
+    double price;
+    string category;
+
+    MenuItem(const string& n, double p, const string& c) : name(n), price(p), category(c) {}
+
+    virtual void display() const {
+        cout << name << " - ₹" << fixed << setprecision(2) << price;
+    }
+
+    const string& displayCategory() const {
+        return category;
+    }
+
+    virtual MenuItem* clone() const {
+        return new MenuItem(name, price, category);
+    }
+
+    virtual ~MenuItem() {}
+};
+
+class BurgerMenuItem : public MenuItem {
+public:
+    BurgerMenuItem(const string& n, double p) : MenuItem(n, p, "Burger") {}
+
+    void display() const override {
+        cout << "Burger - ";
+        MenuItem::display();
+    }
+
+    MenuItem* clone() const override {
+        return new BurgerMenuItem(name, price);
+    }
+};
+
+class CustomMenuItem : public MenuItem {
+public:
+    CustomMenuItem(const string& n, double p) : MenuItem(n, p, "Custom") {}
+
+    void display() const override {
+        cout << "Toppings - ";
+        MenuItem::display();
+    }
+
+    MenuItem* clone() const override {
+        return new CustomMenuItem(name, price);
+    }
+};
+
+class FriesMenuItem : public MenuItem {
+public:
+    FriesMenuItem(const string& n, double p) : MenuItem(n, p, "Fries") {}
+
+    void display() const override {
+        cout << "Fries - ";
+        MenuItem::display();
+    }
+
+    MenuItem* clone() const override {
+        return new FriesMenuItem(name, price);
+    }
+};
+
+class ColdDrinksMenuItem : public MenuItem {
+public:
+    ColdDrinksMenuItem(const string& n, double p) : MenuItem(n, p, "Cold Drinks") {}
+
+    void display() const override {
+        cout << "Cold Drinks - ";
+        MenuItem::display();
+    }
+
+    MenuItem* clone() const override {
+        return new ColdDrinksMenuItem(name, price);
+    }
+};
+
+class CoffeeMenuItem : public MenuItem {
+public:
+    CoffeeMenuItem(const string& n, double p) : MenuItem(n, p, "Coffee") {}
+
+    void display() const override {
+        cout << "Coffee - ";
+        MenuItem::display();
+    }
+
+    MenuItem* clone() const override {
+        return new CoffeeMenuItem(name, price);
+    }
+};
+
+class IceCreamMenuItem : public MenuItem {
+public:
+    IceCreamMenuItem(const string& n, double p) : MenuItem(n, p, "Ice Cream") {}
+
+    void display() const override {
+        cout << "Ice Cream - ";
+        MenuItem::display();
+    }
+
+    MenuItem* clone() const override {
+        return new IceCreamMenuItem(name, price);
+    }
+};
+
+class ComboMenuItem : public MenuItem {
+public:
+    ComboMenuItem(const string& n, double p) : MenuItem(n, p, "Combo") {}
+
+    void display() const override {
+        cout << "Combo - ";
+        MenuItem::display();
+    }
+
+    MenuItem* clone() const override {
+        return new ComboMenuItem(name, price);
+    }
+};
+
+void clearScreen() {
+#ifdef _WIN32
+    system("cls");
+#else
+    cout << "\033[2J\033[H";
+#endif
+}
+
+int displayMenuAndGetChoice(const vector<MenuItem*>& menu, const string& categoryFilter) {
+    clearScreen();
+    cout << "Menu (" << categoryFilter << "):" << endl;
+    for (size_t i = 0; i < menu.size(); i++) {
+        if (menu[i]->displayCategory() == categoryFilter) {
+            cout << i + 1 << ". ";
+            menu[i]->display();
+            cout << endl;
+        }
+    }
+    cout << "0. Confirm Order" << endl;
+
+    int choice;
+    cout << "Enter the number of your choice (0 to confirm the order): ";
+    cin >> choice;
+    return choice;
+}
+
+int main() {
+    string currentCategory;
+    const double TAX_RATE = 0.18;
+
+    vector<MenuItem*> menu = {                                                  //whole menu
+        new BurgerMenuItem("Cheese Burger", 130.00),
+        new BurgerMenuItem("Cheese and Corn Burger", 250.00),
+        new BurgerMenuItem("Cheese and Corn Burger", 250.00),
+        new BurgerMenuItem("Jain Burger", 100.00),
+        new BurgerMenuItem("Aloo Tikki Burger", 70.00),
+        new BurgerMenuItem("Pizza Burger", 300.00),
+        new BurgerMenuItem("Upside-Down Burger", 230.00),
+        new FriesMenuItem("French Fries(S)", 50.00),
+        new FriesMenuItem("French Fries(L)", 150.00),
+        new FriesMenuItem("Peri Peri Fries(S)", 100.00),
+        new FriesMenuItem("Peri Peri Fries(L)", 100.00),
+        new FriesMenuItem("Cheesy Fries(S)", 150.00),
+        new FriesMenuItem("Cheesy Fries(L)", 150.00),
+        new FriesMenuItem("Wedges(S)", 120.00),
+        new FriesMenuItem("Wedges(L)", 120.00),
+        new ColdDrinksMenuItem("Cola", 70.00),
+        new ColdDrinksMenuItem("Fanta", 70.00),
+        new ColdDrinksMenuItem("Pepsi", 70.00),
+        new ColdDrinksMenuItem("Sprite", 70.00),
+        new CoffeeMenuItem("Cold coffee", 200.00),
+        new CoffeeMenuItem("Hot latte", 190.00),
+        new CoffeeMenuItem("Cappuccino", 150.00),
+        new ColdDrinksMenuItem("Berry Coller", 260.00),
+        new ColdDrinksMenuItem("Mint Cooler", 180.00),
+        new ColdDrinksMenuItem("Americano", 190.00),
+        new IceCreamMenuItem("Oreo Ice Cream", 230.00),
+        new IceCreamMenuItem("Chocolate Softy", 80.00),
+        new IceCreamMenuItem("Vanilla Softy", 80.00),
+        new ComboMenuItem("Berry Coller+Peri Peri Fries(S)+Pizza Burger", 640.00),
+        new ComboMenuItem("Vanilla Softy+Aloo Tikki Burger+Fries(S)", 160.00),
+        new ComboMenuItem("Strawberry Shake+Aloo Tikki Burger+Cheesy Fries(L)", 390.00),
+        new CustomMenuItem("Cheese", 30.00),
+        new CustomMenuItem("Chicken Tikki", 80.00),
+        new CustomMenuItem("Fish Tikki", 90.00),
+        new CustomMenuItem("Aloo Tikki", 40.00),
+        new CustomMenuItem("Panner Tikki", 50.00),
+        new CustomMenuItem("Mayonnaise", 20.00),
+        new CustomMenuItem("Tandoor Mayonnaise", 30.00),
+        new CustomMenuItem("Classic Burger Mayonnaise", 30.00),
+        new CustomMenuItem("Mint Mayonnaise", 25.00),
+        new CustomMenuItem("Whole Wheat Bun", 40.00),
+        new CustomMenuItem("Bun", 30.00),
+        new CustomMenuItem("Multigrain Bun", 55.00),
+        new CustomMenuItem("Tomatoes", 15.00),
+        new CustomMenuItem("Onion", 10.00),
+        new CustomMenuItem("Lettuce", 23.00),
+        new CustomMenuItem("Olives", 25.00),
+        new CustomMenuItem("Jalapenos", 25.00)
+    };
+    int tableNumber;
+    string customerName;  // Added customer name variable
+    string customerMobile;  // Added customer mobile number variable
+    int ppl;
+    cout <<"                                              Welcome to Burger Shack                                 " << endl;
+    cout << "Contact: 7507092945" << setw(90);
+    cout << "Location: Balewadi High Street" << endl;
+    cout<<"        ----------------------------------------------------------------------------           "<<endl;
+    cout<<"                                            TRIVIA TUESDAY                          "<<endl;
+    cout<<"                               Get Fries free with Burger and drink combo          "<<endl;
+    cout << "Enter your name: ";
+    getline(cin, customerName);
+    cout << "Hello, " << customerName << "! What will you like to have today?" << endl;
+    cout<<"Table for how many people?"<<endl;
+    cin>>ppl;
+    int tablenumber=0;
+    if(ppl<3)
+    {
+       tablenumber=3;
+    }
+    else if(ppl<5)
+    {
+      tablenumber=5;
+    }
+    else
+    {
+         tablenumber= 2;
+    }
+    cout << "Your table number is: " << tablenumber << endl;
+    cout << "Enter your mobile number: ";
+    cin >> customerMobile;
+
+
+    vector<MenuItem*> order;
+    double total = 0;
+
+    while (true) {
+        clearScreen();
+        cout << "Choose a category:" << endl;   //menu
+        cout << "1. Burger" << endl;
+        cout << "2. Fries" << endl;
+        cout << "3. Cold Drinks" << endl;
+        cout << "4. Coffee" << endl;
+        cout << "5. Ice Cream" << endl;
+        cout << "6. Combo Offer" << endl;
+        cout << "7. Customize your Burger" << endl;
+        cout << "0. Confirm Order" << endl;
+
+        int categoryChoice;
+        cout << "Enter the number of your choice: ";
+        cin >> categoryChoice;
+
+        if (categoryChoice == 0) {
+            clearScreen();
+            cout << "---------------------------------------------" << endl;
+            cout << setw(20) << left << "Item" << setw(10) << right << "Price" << endl;
+            cout << "---------------------------------------------" << endl;
+            for (const MenuItem* item : order) {
+                cout << setw(20) << left << item->name << " - ₹" << fixed << setprecision(2) << item->price << endl;
+                
+            }
+            total = 0;  // Reset total
+            for (const MenuItem* item : order) {
+                total += item->price;
+            }
+            cout << "---------------------------------------------" << endl;
+
+            double tax = total * TAX_RATE;
+            double totalWithTax = total + tax;
+
+            cout << "Subtotal: ₹" << fixed << setprecision(2) << total << endl;
+            cout << "Tax (" << (TAX_RATE * 100) << "%): ₹" << fixed << setprecision(2) << tax << endl;
+            cout << "---------------------------------------------" << endl;
+            cout << "Total (including tax): ₹" << fixed << setprecision(2) << totalWithTax << endl;
+
+            cout << "1. Confirm Order" << endl;
+            cout << "2. Edit Order" << endl;
+            cout << "3. Choose a different category" << endl;
+            cout << "4. Exit" << endl;
+
+            int confirmChoice;
+            cout << "Enter your choice: ";
+            cin >> confirmChoice;
+
+            if (confirmChoice == 1) {
+                break;
+            } else if (confirmChoice == 2) {
+                while (true) {
+                    clearScreen();
+                    cout << "Table " << tableNumber << " - Edit Your Order:" << endl;
+                    cout << "---------------------------------------------" << endl;
+                    cout << setw(5) << left << "No." << setw(20) << left << "Item" << setw(10) << right << "Price" << endl;
+                    cout << "---------------------------------------------" << endl;
+                    for (size_t i = 0; i < order.size(); i++) {
+                        cout << i + 1 << ". ";
+                        order[i]->display();
+                        cout << endl;
+                    }
+                    cout << "0. Done Editing" << endl;
+
+                    int editChoice;
+                    cout << "Enter the number to remove the item from the order (0 to finish editing): ";
+                    cin >> editChoice;
+
+                    if (editChoice == 0) {
+                        break;
+                    } else if (editChoice >= 1 && editChoice <= static_cast<int>(order.size())) {
+                        total -= order[editChoice - 1]->price;
+                        delete order[editChoice - 1];
+                        order.erase(order.begin() + (editChoice - 1));
+                    } else {
+                        cout << "Invalid choice. Please try again." << endl;
+                    }
+                }
+            } else if (confirmChoice == 3) {
+                continue;
+            } else if (confirmChoice == 4) {
+                for (MenuItem* item : order) {
+                    delete item;
+                }
+                return 0;
+            } else {
+                cout << "Invalid choice. Please try again." << endl;
+            }
+        } else if (categoryChoice >= 1 && categoryChoice <= 7) {
+            string currentCategory;
+            if (categoryChoice == 1) {
+                currentCategory = "Burger";
+            } else if (categoryChoice == 2) {
+                currentCategory = "Fries";
+            } else if (categoryChoice == 3) {
+                currentCategory = " Cold Drinks";
+            } else if (categoryChoice == 4) {
+                currentCategory = "Coffee";
+            }else if (categoryChoice == 5) {
+                currentCategory = "Ice-Cream";
+            }else if (categoryChoice == 6) {
+                currentCategory = "Combo";
+            }else if (categoryChoice == 7) {
+                currentCategory = "Custom";
+            }
+
+            while (true) {
+                int itemChoice = displayMenuAndGetChoice(menu, currentCategory);
+
+                if (itemChoice == 0) {
+                    break;
+                } else if (itemChoice >= 1 and itemChoice <= static_cast<int>(menu.size())) {
+                    order.push_back(menu[itemChoice - 1]->clone());
+                    total += menu[itemChoice - 1]->price;
+                    cout << menu[itemChoice - 1]->name << " added to your order." << endl;
+                } else {
+                    cout << "Invalid choice. Please try again." << endl;
+                }
+            }
+        } else {
+            cout << "Invalid choice. Please try again." << endl;
+        }
+    }
+
+    clearScreen();
+    cout << "Payment Options:" << endl;
+    cout << "1. Card" << endl;
+    cout << "2. Cash" << endl;
+    cout << "3. UPI" << endl;
+    cout<<"4.Swiggy One"<<endl;
+    int paymentChoice;
+    cout << "Choose a payment option: ";
+    cin >> paymentChoice;
+
+    clearScreen();
+    if (paymentChoice == 1) {
+        int cardChoice;  // Added card payment choice
+        cout<<"Get 5 % cashback by using ICICI credit card * "<<endl;
+        cout << "Payment by Card" << endl;
+        cout << "1. Credit Card" << endl;
+        cout << "2. Debit Card" << endl;
+        cout<<"3.Sodexo Card"<<endl;
+        cout << "Choose card type: ";
+        cin >> cardChoice;
+
+        if (cardChoice == 1) {
+            cout << "Payment by Credit Card" << endl;
+        } else if (cardChoice == 2) {
+            cout << "Payment by Debit Card" << endl;
+        }  else if (cardChoice == 3) {
+            cout << "Payment by Sodexo Card" << endl;
+        }else {
+            cout << "Invalid card type." << endl;
+        }
+    } else if (paymentChoice == 2) {
+        cout << "Payment by Cash" << endl;
+    } else if (paymentChoice == 3) {
+        cout<<"If the total amount is more than 5k then discount of 5 %"<<endl;
+        cout << "Payment by UPI" << endl;
+
+        // Display the UPI payment link
+        cout << "To complete your payment, please open the following link in your browser:" << endl;
+        cout << "file:///C:/Users/Dell/Documents/QR.html" << endl;
+
+      
+        cout << "Once the payment is completed, press any key to return to the main menu." << endl;
+        cin.ignore();
+        cin.get();
+    }else if (paymentChoice == 4) {
+        cout<<"Get 10% off"<<endl;
+        cout << "Payment by Swiggy One" << endl;
+        cout << "Open Swiggy and scan below given QR." << endl;
+        cout << "file:///C:/Users/Dell/Documents/QR.html" << endl;
+        }else {
+        cout << "Invalid payment option." << endl;
+    }
+
+
+    clearScreen();
+    int serviceRating;  // Added service rating
+    cout << "Rate our service on a scale of 1 to 10: ";
+    cin >> serviceRating;
+    cout << "Service Rating: " << serviceRating << "/10" << endl;
+
+    if (serviceRating < 5) {
+        string feedback;
+        cout << ":(";
+        cout << "We're sorry to hear that you were not satisfied. Please provide feedback: ";
+        cin.ignore();  // Consume the newline character
+        getline(cin, feedback);
+        cout << "Thank you for your feedback. We will work to improve our service." << endl;
+    }
+    clearScreen();
+    cout << "                                                   Order Placed!                         " << endl;
+    cout << "                                                It will be served ASAP.                     " << endl;
+    cout << "                                         Thank you for choosing Burger Shack.              " << endl;
+    cout << "                                                    Visit again                           " << endl;
+
+    for (MenuItem* item : order) {
+        delete item;
+    }
+
+}
